@@ -1,181 +1,101 @@
-source /Users/ams11/github/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+# If you come from bash you might have to change your $PATH.
+# export PATH=$HOME/bin:/usr/local/bin:$PATH
 
+# Path to your oh-my-zsh installation.
+export ZSH="$HOME/.oh-my-zsh"
 
-# https://github.com/sindresorhus/pure
-# fpath+=("/usr/local/share/zsh/site-functions")
-# autoload -Uz promptinit && promptinit
-# prompt pure
-# PURE_PROMPT_SYMBOL=$
+# Set name of the theme to load --- if set to "random", it will
+# load a random theme each time oh-my-zsh is loaded, in which case,
+# to know which specific one was loaded, run: echo $RANDOM_THEME
+# See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
+ZSH_THEME="robbyrussell"
 
-# RED="\[\033[0;31m\]"
-# YELLOW="\[\033[0;33m\]"
-# GREEN="\[\033[0;32m\]"
-# PS1="$RED\$(date +%H:%M) \w$YELLOW \$(parse_git_branch)$GREEN\$ "
+# Set list of themes to pick from when loading at random
+# Setting this variable when ZSH_THEME=random will cause zsh to load
+# a theme from this variable instead of looking in $ZSH/themes/
+# If set to an empty array, this variable will have no effect.
+# ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
 
-function __git_dirty {
-  git diff --quiet HEAD &>/dev/null
-  [ $? == 1 ] && echo "!"
-}
+# Uncomment the following line to use case-sensitive completion.
+# CASE_SENSITIVE="true"
 
-function __git_branch {
-  __git_ps1 "(%s)"
-}
+# Uncomment the following line to use hyphen-insensitive completion.
+# Case-sensitive completion must be off. _ and - will be interchangeable.
+# HYPHEN_INSENSITIVE="true"
 
-bash_prompt() {
-  local NONE="\[\033[0m\]"    # unsets color to term's fg color
+# Uncomment one of the following lines to change the auto-update behavior
+# zstyle ':omz:update' mode disabled  # disable automatic updates
+# zstyle ':omz:update' mode auto      # update automatically without asking
+# zstyle ':omz:update' mode reminder  # just remind me to update when it's time
 
-  # regular colors
-  local K="\[\033[0;30m\]"    # black
-  local R="\[\033[0;31m\]"    # red
-  local G="\[\033[0;32m\]"    # green
-  local Y="\[\033[0;33m\]"    # yellow
-  local B="\[\033[0;34m\]"    # blue
-  local M="\[\033[0;35m\]"    # magenta
-  local C="\[\033[0;36m\]"    # cyan
-  local W="\[\033[0;37m\]"    # white
+# Uncomment the following line to change how often to auto-update (in days).
+# zstyle ':omz:update' frequency 13
 
-  local UC=$W                 # user's color
-  [ $UID -eq "0" ] && UC=$R   # root's color
+# Uncomment the following line if pasting URLs and other text is messed up.
+# DISABLE_MAGIC_FUNCTIONS="true"
 
-  PS1="\A $W$R\w $Y\$(__git_branch)$R\$(__git_dirty)${NONE}$ "
-}
+# Uncomment the following line to disable colors in ls.
+# DISABLE_LS_COLORS="true"
 
-bash_prompt
+# Uncomment the following line to disable auto-setting terminal title.
+# DISABLE_AUTO_TITLE="true"
 
-# PATH
-export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH
-export PATH=/Users/z/git/github/awssume/bin:$PATH
-export PATH="$PATH:./node_modules/.bin"
-export PATH="$PATH:/Users/z/Library/Python/2.7/bin"
-export PATH="$PATH:/Users/z/git/github/github/bin"
+# Uncomment the following line to enable command auto-correction.
+# ENABLE_CORRECTION="true"
 
-# History
-export HISTSIZE=10000
-export HISTFILESIZE=10000
-export SAVEHIST=10000
-export HISTFILE=$HOME/.history
-export NODE_REPL_HISTORY_FILE=$HOME/.node_repl_history
-setopt append_history
-hist() { cat $HISTFILE | grep "$*"; }
+# Uncomment the following line to display red dots whilst waiting for completion.
+# You can also set it to another string to have that shown instead of the default red dots.
+# e.g. COMPLETION_WAITING_DOTS="%F{yellow}waiting...%f"
+# Caution: this setting can cause issues with multiline prompts in zsh < 5.7.1 (see #5765)
+# COMPLETION_WAITING_DOTS="true"
 
-export EDITOR="code"
+# Uncomment the following line if you want to disable marking untracked files
+# under VCS as dirty. This makes repository status check for large repositories
+# much, much faster.
+# DISABLE_UNTRACKED_FILES_DIRTY="true"
 
-# brew install tree
-tree() {
-  command tree -I 'node_modules' "$@"
-}
+# Uncomment the following line if you want to change the command execution time
+# stamp shown in the history command output.
+# You can set one of the optional three formats:
+# "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
+# or set a custom format using the strftime function format specifications,
+# see 'man strftime' for details.
+# HIST_STAMPS="mm/dd/yyyy"
 
-dir() {
-  mkdir -p $1
-  cd $1
-}
+# Would you like to use another custom folder than $ZSH/custom?
+# ZSH_CUSTOM=/path/to/new-custom-folder
 
-proj() {
-  mkdir -p $1
-  cd $1
-  yarn init --yes
-  npm i -D jest standard standard-markdown
-  npe scripts.test "jest && standard --fix && standard-markdown"
-  npe scripts.watch "jest --watch --notify --notifyMode=change --coverage"
-  npe standard.env.jest true
-  touch index.js test.js
-  echo ".env" > .gitignore
-  echo ".npmrc" >> .gitignore
-  echo "coverage" >> .gitignore
-  echo "node_modules" >> .gitignore
-  edit .
-}
+# Which plugins would you like to load?
+# Standard plugins can be found in $ZSH/plugins/
+# Custom plugins may be added to $ZSH_CUSTOM/plugins/
+# Example format: plugins=(rails git textmate ruby lighthouse)
+# Add wisely, as too many plugins slow down shell startup.
+plugins=(git)
 
-add-npm-script() {
-  set -x
-  local filename=script/$1.js
-  mkdir -p script
-  echo "#!/usr/bin/env node" >> $filename
-  echo "" >> $filename
-  chmod +x $filename
-  npe scripts.$1 "node $filename"
-}
+source $ZSH/oh-my-zsh.sh
 
-alias aliases='edit ~/github/dotfiles/.aliases.sh'
-source ~/github/dotfiles/.aliases.sh
-source ~/github/dotfiles/.git_helpers.sh
-source ~/github/dotfiles/.npm_completion.sh
+# User configuration
 
-# Find all non-hidden files in the current path
-ff() { find . -iname '*'$*'*' -type f ! -iname ".*" ! -path "*node_modules*"; }
+# export MANPATH="/usr/local/man:$MANPATH"
 
-# Find all non-hidden directories in the current path
-fd() { find . -iname '*'$*'*' -type d ! -iname ".*" ! -path "*node_modules*"; }
+# You may need to manually set your language environment
+# export LANG=en_US.UTF-8
 
-# Find all files and directories in the current path,
-# ignoring hidden files and node_modules
-# f() { find . -iname '*'$*'*' ! -iname ".*" ! -path "*node_modules*"; }
-f() { find . -iname '*'$*'*' ! -iname ".*"; }
-alias fa=f
+# Preferred editor for local and remote sessions
+# if [[ -n $SSH_CONNECTION ]]; then
+#   export EDITOR='vim'
+# else
+#   export EDITOR='mvim'
+# fi
 
-in() {
-  mdfind \"$*\" -onlyin .
-}
+# Compilation flags
+# export ARCHFLAGS="-arch x86_64"
 
-# Find files matching pattern $1 and copy them to directory $2
-# fcopy svg ~/Desktop
-fcopy() {
-  ff $1 | xargs -I {} cp {} $2
-}
-
-edit() {
-  code ${1:-.} # default to .
-}
-
-serve() {
-  port=$1
-  python -m SimpleHTTPServer ${port:=8000}
-}
-
-
-# Convert
-# https://goo.gl/iOCPs9
-# Usage: mov2gif some.mov
-# The gif will be named after the mov
-mov2gif(){
-  infile=$1
-  outfile=${infile/.mov/.gif}
-  echo "ffmpeg -i $infile -pix_fmt rgb24 -r 15 -f gif - | gifsicle --optimize=3 --delay=3 > $outfile"
-  ffmpeg -i $infile -pix_fmt rgb24 -r 15 -f gif - | gifsicle --optimize=3 --delay=3 > $outfile
-}
-
-review_pr() {
-  git fetch origin refs/pull/$1/head && git checkout -b pr-$1 FETCH_HEAD
-}
-
-mv_screenshots() {
-  mv ~/Desktop/Screen\ Shot* ~/Google/Screenshots
-  mv ~/Desktop/Screen\ Recording* ~/Google/Screenshots
-}
-
-# set up a tiny project to try out an npm module
-try_npm_module() {
-  module=$1
-  cd ~/Desktop
-  mkdir -p "$module-test"
-  cd "$module-test"
-  echo "{}" > package.json
-  printf "const $module = require('$module')\n\n" > index.js
-  npm i $module
-  $EDITOR .
-}
-
-command_not_found_handler() {
-  echo "$@" >> $HOME/.mistyped_commands
-  echo "$@ command not found. saved to $HOME/.mistyped_commands"
-  exit 127
-}
-
-# eval "$(nodenv init -)"
-
-[[ -s `brew --prefix`/etc/autojump.sh ]] && . `brew --prefix`/etc/autojump.sh
-
-# eval "$(rbenv init -)"
-test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
-
-export PATH="/usr/local/opt/crowdin@3/bin:$PATH"
+# Set personal aliases, overriding those provided by oh-my-zsh libs,
+# plugins, and themes. Aliases can be placed here, though oh-my-zsh
+# users are encouraged to define aliases within the ZSH_CUSTOM folder.
+# For a full list of active aliases, run `alias`.
+#
+# Example aliases
+# alias zshconfig="mate ~/.zshrc"
+# alias ohmyzsh="mate ~/.oh-my-zsh"
